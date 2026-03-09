@@ -1,0 +1,12 @@
+{
+  "name": "ai-challenge-leaderboard",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["web", "cli"],
+  "scripts": {
+    "dev": "npm run dev --workspace=web",
+    "build": "npm run build --workspace=web && npm run build --workspace=cli",
+    "build:web": "npm run build --workspace=web",
+    "build:cli": "npm run build --workspace=cli"
+  }
+}

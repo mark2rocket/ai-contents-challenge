@@ -1,0 +1,73 @@
+{
+  "project": "AI Challenge Leaderboard",
+  "description": "Claude Code 토큰 사용량 리더보드 서비스. CLI(ai-challenge)와 Next.js 웹앱으로 구성.",
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "프로젝트 초기 세팅 (Monorepo 구조)",
+      "passes": true,
+      "evidence": "package.json workspaces=[web,cli] 확인. web/package.json next+tailwind 포함. cli/package.json bin.ai-challenge 정의. pricing.json 모델 단가 포함. next.config.ts, postcss.config.mjs 존재."
+    },
+    {
+      "id": "US-002",
+      "title": "Supabase DB 스키마",
+      "passes": true,
+      "evidence": "001_init.sql: users(id, nickname UNIQUE, api_key_hash, platform, ...) + records(id, user_id FK, period_start, ...) + UNIQUE(user_id, period_start) + 5개 INDEX 확인."
+    },
+    {
+      "id": "US-003",
+      "title": "Next.js API — POST /api/v1/register",
+      "passes": true,
+      "evidence": "register/route.ts 존재. 닉네임 유효성 검사, SHA-256 해시 저장, 201 응답에 api_key+nickname+leaderboard_url 포함."
+    },
+    {
+      "id": "US-004",
+      "title": "Next.js API — POST /api/v1/record",
+      "passes": true,
+      "evidence": "record/route.ts: SHA-256 해시 비교 인증, ON CONFLICT 멱등성 처리, already_existed 플래그, rate limit(1시간/2회) 구현."
+    },
+    {
+      "id": "US-005",
+      "title": "Next.js API — GET /api/v1/leaderboard",
+      "passes": true,
+      "evidence": "leaderboard/route.ts: period/metric/limit 파라미터, rank_change 24시간 전 비교, is_me 없음. Next.js 빌드 통과."
+    },
+    {
+      "id": "US-006",
+      "title": "Next.js API — GET /api/v1/profile/[nickname]",
+      "passes": true,
+      "evidence": "profile/[nickname]/route.ts: 일별 집계, 오늘/전체 순위, summary(today/7d_total/7d_avg), 404 처리. 빌드 통과."
+    },
+    {
+      "id": "US-007",
+      "title": "웹 UI — 메인 리더보드 페이지",
+      "passes": true,
+      "evidence": "page.tsx: 기간/메트릭 탭, 👑🥈🥉 배지, localStorage 닉네임 하이라이트, ?nickname= URL 파라미터, estimated_cost_usd 툴팁, 순위변동 ▲▼. 빌드 통과."
+    },
+    {
+      "id": "US-008",
+      "title": "웹 UI — 개인 프로필 페이지",
+      "passes": true,
+      "evidence": "profile/[nickname]/page.tsx + ChartSection.tsx + UsageChart.tsx + ProfileClient.tsx: Recharts BarChart, 메트릭 요약 카드, 공유 URL 복사. 빌드 통과."
+    },
+    {
+      "id": "US-009",
+      "title": "CLI — ai-challenge init",
+      "passes": true,
+      "evidence": "init.ts: readline 닉네임 입력, 유효성 검사, POST register, config.json 저장, macOS/Linux crontab 추가, Windows 분기 처리."
+    },
+    {
+      "id": "US-010",
+      "title": "CLI — ai-challenge sync (로그 파싱 핵심)",
+      "passes": true,
+      "evidence": "log-parser.ts: ~/.claude/projects/** 재귀 탐색, type===assistant 필터, message.usage 집계, cache_creation nested 처리, pricing.json 비용계산, sessionId 기반 세션수/사용시간, 30분 갭 분리. TypeScript 빌드 통과."
+    },
+    {
+      "id": "US-011",
+      "title": "CLI — ai-challenge status",
+      "passes": true,
+      "evidence": "status.ts: last_sync.json 조회, 다음 정각까지 남은 시간 계산, config 없으면 안내, queue 대기 항목 수 표시. 빌드 통과."
+    }
+  ],
+  "progress_file": ".omc/progress.txt"
+}
